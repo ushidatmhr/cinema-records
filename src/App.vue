@@ -28,7 +28,7 @@
                                 </select>
                             </span>
                             <span class="actions">
-                                <i class="material-icons" @click="doDelete">delete</i>
+                                <i class="material-icons" @click="doDelete(key)">delete</i>
                                 <i class="material-icons" @click="cancel">clear</i>
                                 <i class="material-icons" @click="done(key)">done</i>
                             </span>
@@ -157,8 +157,20 @@ export default {
 
       this.cancel();
     },
-    doDelete() {
+    doDelete(id) {
       if (confirm("削除しますか？")) {
+        this.firestore()
+          .collection("cinemas")
+          .doc(id)
+          .delete()
+          .then(() => {
+            console.log("delete success");
+            delete this.cinemas[id];
+            this.cancel();
+          })
+          .catch(function(error) {
+            console.error("delete faild", error);
+          });
       }
     }
   }
