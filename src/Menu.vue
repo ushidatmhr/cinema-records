@@ -4,6 +4,10 @@
         <i class="material-icons" @click="toggleMenuOpen">menu</i>
         <nav class="menu-block" v-if="isOpen">
             <ul class="menu-list">
+                <li class="menu-item" @click="$emit('reload')">
+                    <i class="material-icons">refresh</i>
+                    Reload
+                </li>
                 <li class="menu-item" @click="signOut">
                     Sign Out
                 </li>

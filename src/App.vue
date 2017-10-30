@@ -9,7 +9,7 @@
                     <option>2</option>
                     <option>3</option>
                 </select>
-                <Menu class="hamburger" @toggleEditMode="toggleEditMode"></Menu>
+                <Menu class="hamburger" @reload="reload" @toggleEditMode="toggleEditMode"></Menu>
             </section>
             <section>
                 {{displayCount}} / {{Object.keys(cinemas).length}}
@@ -108,6 +108,23 @@ export default {
     }
   },
   methods: {
+    reload() {
+      this.cinemas = {};
+      // TODO createdと同じ処理になってる
+      this.firestore()
+        .collection("cinemas")
+        .orderBy("title")
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            this.$set(this.cinemas, doc.id, {
+              title: doc.data().title,
+              recommend: doc.data().recommend,
+              visible: true
+            });
+          });
+        });
+    },
     toggleEditMode(flag) {
       this.editMode = flag;
     },
