@@ -1,8 +1,13 @@
 import Vue from 'vue'
 import App from './App.vue'
+import Menu from './Menu.vue'
+import LoginModal from './LoginModal.vue'
+
 import * as firebase from 'firebase'
 import * as firestor from 'firebase/firestore'
 
+Vue.component('Menu', Menu);
+Vue.component('LoginModal', LoginModal);
 
 firebase.initializeApp({
     apiKey: "AIzaSyAHDqfsrgwtPkX2m1a4wtvNFBfCsy8OL4E",

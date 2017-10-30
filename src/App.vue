@@ -9,10 +9,7 @@
                     <option>2</option>
                     <option>3</option>
                 </select>
-                <label>
-                    <input type="checkbox" v-model="editMode"/>
-                    <i class="material-icons">mode_edit</i>
-                </label>
+                <Menu class="hamburger" @toggleEditMode="toggleEditMode"></Menu>
             </section>
             <section>
                 {{displayCount}} / {{Object.keys(cinemas).length}}
@@ -31,6 +28,7 @@
                                 </select>
                             </span>
                             <span class="actions">
+                                <i class="material-icons" @click="doDelete">delete</i>
                                 <i class="material-icons" @click="cancel">clear</i>
                                 <i class="material-icons" @click="done(key)">done</i>
                             </span>
@@ -110,6 +108,9 @@ export default {
     }
   },
   methods: {
+    toggleEditMode(flag) {
+      this.editMode = flag;
+    },
     searchCinema() {
       Object.keys(this.cinemas).forEach(element => {
         if (
@@ -148,13 +149,17 @@ export default {
           console.log("Document successfully written!");
         })
         .catch(function(error) {
-          console.error("Error writing document: ", error);
+          alert(error);
         });
 
       this.cinemas[id].title = title;
       this.cinemas[id].recommend = recommend;
 
       this.cancel();
+    },
+    doDelete() {
+      if (confirm("削除しますか？")) {
+      }
     }
   }
 };
@@ -174,19 +179,31 @@ export default {
     width: 100%;
   }
 
-  .search {
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    height: 21px;
-    padding: 2px 10px;
+  .menu {
+    display: flex;
+    flex-direction: row;
 
-    &:focus {
-      outline: none;
+    .search {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      height: 21px;
+      padding: 2px 10px;
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    .hamburger {
+      margin-right: 0;
+      margin-left: auto;
+      display: inline-block;
     }
   }
 
   .board {
     padding: 0;
+    height: 100vh;
     width: 100%;
     margin: 5px auto;
     background-color: #fff;
