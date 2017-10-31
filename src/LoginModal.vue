@@ -6,7 +6,7 @@
                     ログイン
                 </header>
                 <section class="modal-body">
-                    <span class="error-message" v-if="showError">Not Login</span>
+                    <span class="error-message" v-if="errorMessage">{{errorMessage}}</span>
                     <form @submit.prevent="doLogin">
                         <div>
                             mail
@@ -33,7 +33,7 @@ export default {
     return {
       email: "",
       password: "",
-      showError: false
+      errorMessage: ""
     };
   },
   methods: {
@@ -45,7 +45,7 @@ export default {
           this.cancel();
         })
         .catch(error => {
-          this.showError = true;
+          this.errorMessage = error;
         });
     },
     cancel() {
@@ -54,7 +54,7 @@ export default {
     clear() {
       email = "";
       password = "";
-      showError = false;
+      showError = {};
     }
   }
 };
