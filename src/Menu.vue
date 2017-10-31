@@ -4,14 +4,20 @@
         <i class="material-icons" @click="toggleMenuOpen">menu</i>
         <nav class="menu-block" v-if="isOpen">
             <ul class="menu-list">
-                <li class="menu-item" @click="$emit('reload')">
+                <li class="menu-item select-item" @click="$emit('reload')">
                     <i class="material-icons">refresh</i>
-                    Reload
+                    <span>
+                        Reload
+                    </span>
                 </li>
-                <li class="menu-item" @click="signOut">
-                    Sign Out
+                <li class="menu-item select-item" @click="signOut">
+                    <i class="material-icons">person_outline</i>
+                    <span>
+                        Sign Out
+                    </span>
                 </li>
                 <li class="menu-item">
+                    <i class="material-icons">mode_edit</i>
                     <div class="switch">
                         <input type="checkbox" class="switch-checkbox" v-model="isEditMode" />
                         <div class="switch-background">
@@ -65,7 +71,7 @@ export default {
 
   .menu-block {
     position: absolute;
-    min-width: 105px;
+    min-width: 155px;
     top: 13px;
     right: 13px;
     background-color: #fff;
@@ -78,11 +84,23 @@ export default {
       padding: 0;
 
       .menu-item {
-        padding: 10px;
-        border-bottom: 1px solid #eee;
+        padding: 0 16px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        flex-direction: row;
 
-        &:hover {
-          //   background-color: #ddd;
+        &.select-item {
+          cursor: pointer;
+
+          &:active {
+            background-color: #ddd;
+          }
+        }
+
+        .material-icons {
+          font-size: 21px;
+          margin-right: 8px;
         }
 
         .switch {
