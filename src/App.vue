@@ -6,9 +6,9 @@
                     <input type="text" placeholder="Search" class="search" v-model="searchText"/>
                     <select class="recommend-select" v-model="searchRecommend">
                         <option></option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
+                        <option :value="1">★</option>
+                        <option :value="2">★★</option>
+                        <option :value="3">★★★</option>
                     </select>
                     <Menu class="hamburger" @reload="reload" @toggleEditMode="toggleEditMode"></Menu>
                 </section>
