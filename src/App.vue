@@ -14,7 +14,9 @@
                 </section>
             </header>
             <section class="sub-info">
-                {{displayCount}} / {{Object.keys(cinemas).length}}
+                <label class="item-count">
+                    {{displayCount}} / {{Object.keys(cinemas).length}}
+                </label>
             </section>
             <section class="board">
                 <ul class="list-item">
@@ -251,10 +253,15 @@ $contentWidth: 600px;
   .sub-info {
     width: $contentWidth;
     margin: auto;
-    padding: 0 10px;
+    display: flex;
 
     @media screen and (max-width: 750px) {
       width: 100%;
+    }
+
+    .item-count {
+      width: 80px;
+      text-align: center;
     }
   }
 
