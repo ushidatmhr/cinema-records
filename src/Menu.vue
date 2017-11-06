@@ -1,32 +1,34 @@
 <template>
     <div id="menu">
         <LoginModal v-if="isOpenLoginModal" @cancel="modalClose"></LoginModal>
-        <i class="material-icons" @click="toggleMenuOpen">menu</i>
-        <nav class="menu-block" v-if="isOpen">
-            <ul class="menu-list">
-                <li class="menu-item select-item" @click="$emit('reload')">
-                    <i class="material-icons">refresh</i>
-                    <span>
-                        Reload
-                    </span>
-                </li>
-                <li class="menu-item select-item" @click="signOut">
-                    <i class="material-icons">person_outline</i>
-                    <span>
-                        Sign Out
-                    </span>
-                </li>
-                <li class="menu-item">
-                    <i class="material-icons">mode_edit</i>
-                    <div class="switch">
-                        <input type="checkbox" class="switch-checkbox" v-model="isEditMode" />
-                        <div class="switch-background">
-                            <div class="switch-knob"/>
+        <i class="material-icons menu-icon" @click="toggleMenuOpen">menu</i>
+        <transition name="menu">
+            <nav class="menu-block" v-if="isOpen">
+                <ul class="menu-list">
+                    <li class="menu-item select-item" @click="$emit('reload')">
+                        <i class="material-icons">refresh</i>
+                        <span>
+                            Reload
+                        </span>
+                    </li>
+                    <li class="menu-item select-item" @click="signOut">
+                        <i class="material-icons">person_outline</i>
+                        <span>
+                            Sign Out
+                        </span>
+                    </li>
+                    <li class="menu-item">
+                        <i class="material-icons">mode_edit</i>
+                        <div class="switch">
+                            <input type="checkbox" class="switch-checkbox" v-model="isEditMode" />
+                            <div class="switch-background">
+                                <div class="switch-knob"/>
+                            </div>
                         </div>
-                    </div>
-                </li>
-            </ul>
-        </nav>
+                    </li>
+                </ul>
+            </nav>
+        </transition>
     </div>
 </template>
 
@@ -34,7 +36,7 @@
 export default {
   data() {
     return {
-      isOpen: true,
+      isOpen: false,
       isEditMode: false,
       isOpenLoginModal: false
     };
@@ -68,6 +70,10 @@ export default {
 <style lang="scss" scoped>
 #menu {
   position: relative;
+
+  .menu-icon {
+    cursor: pointer;
+  }
 
   .menu-block {
     position: absolute;
@@ -166,5 +172,16 @@ export default {
       }
     }
   }
+}
+
+.menu-enter-active,
+.menu-leave-active {
+  transition: all 0.3s;
+}
+
+.menu-enter,
+.menu-leave-to {
+  transform: scale(0);
+  transform-origin: top right 0px;
 }
 </style>
