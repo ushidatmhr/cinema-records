@@ -33,13 +33,44 @@
 </template>
 
 <script>
+var listener = {
+  methods: {
+    listen: function(target, eventType, callback) {
+      if (!this._eventRemovers) {
+        this._eventRemovers = [];
+      }
+      target.addEventListener(eventType, callback);
+      this._eventRemovers.push({
+        remove: function() {
+          target.removeEventListener(eventType, callback);
+        }
+      });
+    }
+  },
+  destroyed: function() {
+    if (this._eventRemovers) {
+      this._eventRemovers.forEach(function(eventRemover) {
+        eventRemover.remove();
+      });
+    }
+  }
+};
+
 export default {
+  mixins: [listener],
   data() {
     return {
       isOpen: false,
       isEditMode: false,
       isOpenLoginModal: false
     };
+  },
+  created: function() {
+    this.listen(window, "click", e => {
+      if (!this.$el.contains(e.target)) {
+        this.isOpen = false;
+      }
+    });
   },
   watch: {
     isEditMode(val) {
@@ -79,8 +110,8 @@ export default {
   .menu-block {
     position: absolute;
     min-width: 155px;
-    top: 13px;
-    right: 13px;
+    top: 0;
+    right: 0;
     background-color: #fff;
     box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
       0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
