@@ -73,6 +73,7 @@ export default {
 
   .menu-icon {
     cursor: pointer;
+    color: #ffffff;
   }
 
   .menu-block {

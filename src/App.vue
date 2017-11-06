@@ -1,17 +1,19 @@
 <template>
     <div id="app">
         <main class="contents">
-            <section class="menu">
-                <input type="text" placeholder="Search" class="search" v-model="searchText"/>
-                <select v-model="searchRecommend">
-                    <option></option>
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                </select>
-                <Menu class="hamburger" @reload="reload" @toggleEditMode="toggleEditMode"></Menu>
-            </section>
-            <section>
+            <header class="header">
+                <section class="menu">
+                    <input type="text" placeholder="Search" class="search" v-model="searchText"/>
+                    <select class="recommend-select" v-model="searchRecommend">
+                        <option></option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                    </select>
+                    <Menu class="hamburger" @reload="reload" @toggleEditMode="toggleEditMode"></Menu>
+                </section>
+            </header>
+            <section class="sub-info">
                 {{displayCount}} / {{Object.keys(cinemas).length}}
             </section>
             <section class="board">
@@ -196,30 +198,46 @@ export default {
 
 
 <style lang="scss" scoped>
+$contentWidth: 600px;
+
 .contents {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  width: 600px;
   align-items: flex-start;
   margin: 0 auto;
 
-  @media screen and (max-width: 750px) {
+  .header {
+    background-color: #212121;
     width: 100%;
-  }
-
-  .menu {
+    height: 57px;
     display: flex;
     flex-direction: row;
 
-    .search {
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      height: 21px;
-      padding: 2px 10px;
+    @media screen and (max-width: 750px) {
+      width: 100%;
+    }
 
-      &:focus {
-        outline: none;
+    .menu {
+      width: $contentWidth;
+      margin: auto;
+      padding: 0 10px;
+      display: flex;
+      flex-direction: row;
+
+      .search {
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        height: 21px;
+        padding: 2px 10px;
+
+        &:focus {
+          outline: none;
+        }
+      }
+
+      .recommend-select {
+        margin-left: 10px;
       }
     }
 
@@ -230,15 +248,29 @@ export default {
     }
   }
 
+  .sub-info {
+    width: $contentWidth;
+    margin: auto;
+    padding: 0 10px;
+
+    @media screen and (max-width: 750px) {
+      width: 100%;
+    }
+  }
+
   .board {
     padding: 0;
     height: 100vh;
-    width: 100%;
+    width: $contentWidth;
     margin: 5px auto;
     background-color: #fff;
     box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
       0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
     overflow-y: scroll;
+
+    @media screen and (max-width: 750px) {
+      width: 100%;
+    }
 
     .list-item {
       list-style: none;
