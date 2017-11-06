@@ -49,7 +49,7 @@ export default {
       this.firebase()
         .auth()
         .signInWithEmailAndPassword(this.email, this.password)
-        .then(function(usr) {
+        .then(usr => {
           this.cancel();
         })
         .catch(error => {
