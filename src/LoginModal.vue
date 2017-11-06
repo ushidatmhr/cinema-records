@@ -8,13 +8,21 @@
                 <section class="modal-body">
                     <span class="error-message" v-if="errorMessage">{{errorMessage}}</span>
                     <form @submit.prevent="doLogin">
-                        <div>
-                            mail
-                            <input type="email" v-model.trim="email" />
+                        <div class="row-form">
+                            <label class="label">
+                                mail
+                            </label>
+                            <div class="text-field">
+                                <input type="email" class="text-field-input" v-model.trim="email" />
+                            </div>
                         </div>
-                        <div>
-                            password
-                            <input type="password" v-model.trim="password" />
+                        <div class="row-form">
+                            <label class="label">
+                                password
+                            </label>
+                            <div class="text-field">
+                                <input type="password" class="text-field-input" v-model.trim="password" />
+                            </div>
                         </div>
                     </form>
                 </section>
@@ -75,9 +83,13 @@ export default {
 
   .modal-container {
     background-color: #ffffff;
-    min-width: 640px;
+    width: 640px;
     display: flex;
     flex-direction: column;
+
+    @media screen and (max-width: 750px) {
+      width: 90%;
+    }
 
     .error-message {
       color: #ff0000;
@@ -91,6 +103,35 @@ export default {
     .modal-body {
       padding: 0 24px 24px;
       margin-top: 20px;
+
+      .row-form {
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 10px;
+        align-items: center;
+
+        .label {
+          text-align: right;
+          flex-basis: 100px;
+          padding: 0 10px;
+        }
+
+        .text-field {
+          width: 60%;
+
+          .text-field-input {
+            width: 100%;
+            border: none;
+            border-bottom: 1px rgba(0, 0, 0, 0.12) solid;
+            padding-bottom: 8px;
+
+            &:focus {
+              outline: none;
+              border-bottom-color: #212121;
+            }
+          }
+        }
+      }
     }
 
     .modal-footer {
