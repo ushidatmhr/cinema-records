@@ -1,7 +1,7 @@
 <template>
     <div id="menu">
         <LoginModal v-if="isOpenLoginModal" @cancel="modalClose"></LoginModal>
-        <i class="material-icons menu-icon" @click="toggleMenuOpen">menu</i>
+        <i class="material-icons menu-icon" @click="toggleMenuOpen">more_vert</i>
         <transition name="menu">
             <nav class="menu-block" v-if="isOpen">
                 <ul class="menu-list">
