@@ -208,12 +208,12 @@ export default {
 
 .menu-enter-active,
 .menu-leave-active {
-  transition: all 0.3s;
+  transition: all 0.2s ease-out;
 }
 
 .menu-enter,
 .menu-leave-to {
-  transform: scale(0);
+  opacity: 0;
   transform-origin: top right 0px;
 }
 </style>
