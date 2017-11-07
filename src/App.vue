@@ -6,6 +6,7 @@
                     <input type="text" placeholder="Search" class="search" v-model="searchText"/>
                     <select class="recommend-select" v-model="searchRecommend">
                         <option></option>
+                        <option :value="0">☆</option>
                         <option :value="1">★</option>
                         <option :value="2">★★</option>
                         <option :value="3">★★★</option>
@@ -137,7 +138,7 @@ export default {
         if (
           (!this.searchText ||
             ~this.cinemas[element].title.indexOf(this.searchText)) &&
-          (!this.searchRecommend ||
+          (this.searchRecommend === "" ||
             this.cinemas[element].recommend == this.searchRecommend)
         ) {
           this.cinemas[element].visible = true;
