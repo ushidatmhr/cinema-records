@@ -226,6 +226,7 @@ $contentWidth: 600px;
       padding: 0 10px;
       display: flex;
       flex-direction: row;
+      align-items: stretch;
 
       .search {
         border: 1px solid #ddd;
