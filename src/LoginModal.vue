@@ -114,6 +114,10 @@ export default {
           text-align: right;
           flex-basis: 100px;
           padding: 0 10px;
+
+          @media screen and (max-width: 750px) {
+            flex-basis: 72px;
+          }
         }
 
         .text-field {
