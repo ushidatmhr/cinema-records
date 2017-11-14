@@ -1,6 +1,7 @@
 <template>
     <div id="menu">
         <LoginModal v-if="isOpenLoginModal" @cancel="modalClose"></LoginModal>
+        <AddRecordModal v-if="isOpenAddModal" @addSuccess="$emit('reload')" @cancel="modalClose"></AddRecordModal>
         <i class="material-icons menu-icon" @click="toggleMenuOpen">more_vert</i>
         <transition name="menu">
             <nav class="menu-block" v-if="isOpen">
@@ -15,6 +16,12 @@
                         <i class="material-icons">person_outline</i>
                         <span>
                             Sign Out
+                        </span>
+                    </li>
+                    <li class="menu-item select-item" @click="openAddModal">
+                        <i class="material-icons">add</i>
+                        <span>
+                            Add Record
                         </span>
                     </li>
                     <li class="menu-item">
@@ -62,7 +69,8 @@ export default {
     return {
       isOpen: false,
       isEditMode: false,
-      isOpenLoginModal: false
+      isOpenLoginModal: false,
+      isOpenAddModal: false
     };
   },
   created: function() {
@@ -93,6 +101,10 @@ export default {
     },
     modalClose() {
       this.isOpenLoginModal = false;
+      this.isOpenAddModal = false;
+    },
+    openAddModal() {
+      this.isOpenAddModal = true;
     }
   }
 };
