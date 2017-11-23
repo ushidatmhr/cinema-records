@@ -1,3 +1,4 @@
 node_modules
 /public/build.js
 firebase-debug.log
+npm-debug.log
