@@ -53,8 +53,7 @@ export default {
         return;
       }
 
-      this.firestore()
-        .collection("cinemas")
+      this.Cinemas()
         .add({
           title: this.title,
           recommend: this.recommend

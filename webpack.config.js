@@ -53,13 +53,17 @@ module.exports = {
     devtool: '#eval-source-map'
 }
 
-if (process.env.NODE_ENV === 'production') {
+console.log('NODE_ENV=' + process.env.NODE_ENV);
+
+if (process.env.NODE_ENV === 'prod') {
+
     module.exports.devtool = '#source-map'
     // http://vue-loader.vuejs.org/en/workflow/production.html
     module.exports.plugins = (module.exports.plugins || []).concat([
         new webpack.DefinePlugin({
             'process.env': {
-                NODE_ENV: '"production"'
+                NODE_ENV: '"prod"',
+                COLLECTION: '"cinemas"'
             }
         }),
         new webpack.optimize.UglifyJsPlugin({
@@ -72,4 +76,17 @@ if (process.env.NODE_ENV === 'production') {
             minimize: true
         })
     ])
+
+} else if (process.env.NODE_ENV == 'dev') {
+    module.exports.plugins = (module.exports.plugins || []).concat([
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: '"dev"',
+                COLLECTION: '"cinemas-dev"'
+            }
+        })
+    ]);
+
+} else {
+    console.error('未定義のNODE_ENV');
 }

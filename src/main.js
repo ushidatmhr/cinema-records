@@ -24,6 +24,9 @@ Vue.mixin({
         },
         firestore() {
             return firebase.firestore();
+        },
+        Cinemas() {
+            return firebase.firestore().collection(process.env.COLLECTION);
         }
     }
 });

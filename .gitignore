@@ -1,4 +1,5 @@
 node_modules
 /public/build.js
+public/build.js.map
 firebase-debug.log
 npm-debug.log

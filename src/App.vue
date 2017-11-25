@@ -78,8 +78,7 @@ export default {
     };
   },
   created: function() {
-    this.firestore()
-      .collection("cinemas")
+    this.Cinemas()
       .orderBy("title")
       .get()
       .then(querySnapshot => {
@@ -116,8 +115,7 @@ export default {
     reload() {
       this.cinemas = {};
       // TODO createdと同じ処理になってる
-      this.firestore()
-        .collection("cinemas")
+      this.Cinemas()
         .orderBy("title")
         .get()
         .then(querySnapshot => {
@@ -160,8 +158,7 @@ export default {
       var title = this.edit.title;
       var recommend = Number(this.edit.recommend);
 
-      this.firestore()
-        .collection("cinemas")
+      this.Cinemas()
         .doc(id)
         .set({
           title: title,
@@ -181,8 +178,7 @@ export default {
     },
     doDelete(id) {
       if (confirm("削除しますか？")) {
-        this.firestore()
-          .collection("cinemas")
+        this.Cinemas()
           .doc(id)
           .delete()
           .then(() => {
