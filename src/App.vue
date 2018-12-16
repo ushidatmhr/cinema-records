@@ -323,11 +323,3 @@ $contentWidth: 600px;
   }
 }
 </style>
-
-<style>
-body {
-  font-family: "Noto Sans JP", sans-serif;
-  font-size: 100%;
-  background-color: #eee;
-}
-</style>
