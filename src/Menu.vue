@@ -1,113 +1,182 @@
 <template>
-    <div id="menu">
-        <LoginModal v-if="isOpenLoginModal" @cancel="modalClose"></LoginModal>
-        <AddRecordModal v-if="isOpenAddModal" @addSuccess="$emit('reload')" @cancel="modalClose"></AddRecordModal>
-        <i class="material-icons menu-icon" @click="toggleMenuOpen">more_vert</i>
-        <transition name="menu">
-            <nav class="menu-block" v-if="isOpen">
-                <ul class="menu-list">
-                    <li class="menu-item select-item" @click="$emit('reload')">
-                        <i class="material-icons">refresh</i>
-                        <span>
-                            Reload
-                        </span>
-                    </li>
-                    <li class="menu-item select-item" @click="signOut">
-                        <i class="material-icons">person_outline</i>
-                        <span>
-                            Sign Out
-                        </span>
-                    </li>
-                    <li class="menu-item select-item" @click="openAddModal">
-                        <i class="material-icons">add</i>
-                        <span>
-                            Add Record
-                        </span>
-                    </li>
-                    <li class="menu-item">
-                        <i class="material-icons">mode_edit</i>
-                        <div class="switch">
-                            <input type="checkbox" class="switch-checkbox" v-model="isEditMode" />
-                            <div class="switch-background">
-                                <div class="switch-knob"/>
-                            </div>
-                        </div>
-                    </li>
-                </ul>
-            </nav>
-        </transition>
-    </div>
+  <div id="menu">
+    <AddRecordModal
+      v-if="isOpenAddModal"
+      @addSuccess="$emit('reload')"
+      @cancel="modalClose"
+      id
+      title
+      recommend="0"
+    ></AddRecordModal>
+    <LoginModal v-if="isOpenLoginModal" @cancel="modalClose"></LoginModal>
+    <i class="material-icons menu-icon" @click="toggleMenuOpen">more_vert</i>
+    <transition name="menu">
+      <nav class="menu-block" v-if="isOpen">
+        <ul class="menu-list">
+          <li class="menu-item select-item" @click="$emit('reload')">
+            <i class="material-icons">refresh</i>
+            <span>Reload</span>
+          </li>
+          <li class="menu-item select-item" @click="signOut">
+            <i class="material-icons">person_outline</i>
+            <span>Sign Out</span>
+          </li>
+          <li class="menu-item select-item" @click="openAddModal">
+            <i class="material-icons">add</i>
+            <span>Add Record</span>
+          </li>
+          <li class="menu-item">
+            <i class="material-icons">mode_edit</i>
+            <div class="switch">
+              <input type="checkbox" class="switch-checkbox" v-model="isEditMode">
+              <div class="switch-background">
+                <div class="switch-knob"/>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </nav>
+    </transition>
+  </div>
 </template>
 
-<script>
-var listener = {
-  methods: {
-    listen: function(target, eventType, callback) {
-      if (!this._eventRemovers) {
-        this._eventRemovers = [];
+<script lang="ts">
+import Vue from "vue";
+import { Watch } from "vue-property-decorator";
+import { Component, Mixins } from "vue-mixin-decorator";
+import CinemasMixin from "./CinemasMixin";
+
+@Component
+export default class Menu extends Mixins<CinemasMixin>(CinemasMixin) {
+  /** メニューの表示判定 */
+  isOpen: boolean = false;
+  /** 追加モーダルの表示フラグ */
+  isOpenAddModal: boolean = false;
+  /** 編集モード */
+  isEditMode: boolean = false;
+  /** ログインモーダルの表示フラグ */
+  isOpenLoginModal: boolean = false;
+
+  private eventRemovers: any[];
+
+  //==========================================
+  // lifecycle hook
+  //==========================================
+
+  created() {
+    // 画面クリックでメニュー閉じるためにイベント登録
+    this.listen(window, "click", e => {
+      if (!this.$el.contains(e.srcElement)) {
+        this.closeMenu();
       }
-      target.addEventListener(eventType, callback);
-      this._eventRemovers.push({
-        remove: function() {
-          target.removeEventListener(eventType, callback);
-        }
-      });
-    }
-  },
-  destroyed: function() {
-    if (this._eventRemovers) {
-      this._eventRemovers.forEach(function(eventRemover) {
+    });
+  }
+
+  destroyed() {
+    if (this.eventRemovers) {
+      this.eventRemovers.forEach(function(eventRemover) {
         eventRemover.remove();
       });
     }
   }
-};
 
-export default {
-  mixins: [listener],
-  data() {
-    return {
-      isOpen: false,
-      isEditMode: false,
-      isOpenLoginModal: false,
-      isOpenAddModal: false
-    };
-  },
-  created: function() {
-    this.listen(window, "click", e => {
-      if (!this.$el.contains(e.target)) {
-        this.isOpen = false;
-      }
-    });
-  },
-  watch: {
-    isEditMode(val) {
-      var user = this.firebase().auth().currentUser;
-      if (val && !user) {
-        this.isOpenLoginModal = true;
-      }
-
-      this.$emit("toggleEditMode", val);
-    }
-  },
-  methods: {
-    toggleMenuOpen() {
-      this.isOpen = !this.isOpen;
-    },
-    signOut() {
-      this.firebase()
-        .auth()
-        .signOut();
-    },
-    modalClose() {
-      this.isOpenLoginModal = false;
-      this.isOpenAddModal = false;
-    },
-    openAddModal() {
-      this.isOpenAddModal = true;
+  /**
+   * 追加モーダル変更時処理
+   */
+  @Watch("isOpenAddModal")
+  doOpenAddModal(newValue: string, oldValue: string) {
+    if (newValue && !this.isAuthenticated()) {
+      this.isOpenLoginModal = true;
     }
   }
-};
+
+  /**
+   * 編集モードの変更時処理
+   */
+  @Watch("isEditMode")
+  chanegEditMode(newValue: string, oldValue: string) {
+    if (newValue && !this.isAuthenticated()) {
+      this.isOpenLoginModal = true;
+    }
+
+    this.$emit("toggleEditMode", newValue);
+  }
+
+  //==========================================
+  // methods
+  //==========================================
+
+  /**
+   * イベント登録
+   */
+  listen(target: Window, eventType: string, callback: EventListener) {
+    if (!this.eventRemovers) {
+      this.eventRemovers = [];
+    }
+
+    target.addEventListener(eventType, callback);
+
+    this.eventRemovers.push({
+      remove: function() {
+        target.removeEventListener(eventType, callback);
+      }
+    });
+  }
+
+  /**
+   * メニューの表示・非表示を切り替える
+   */
+  toggleMenuOpen() {
+    this.isOpen = !this.isOpen;
+  }
+
+  /**
+   * メニューを閉じる
+   */
+  closeMenu() {
+    this.isOpen = false;
+  }
+
+  /**
+   * サインアウト実行
+   */
+  signOut() {
+    this.firebase
+      .auth()
+      .signOut()
+      .then(() => {})
+      .catch(error => {
+        alert(error);
+      });
+  }
+
+  /**
+   * モーダルを閉じる
+   */
+  modalClose() {
+    this.isOpenLoginModal = false;
+    this.isOpenAddModal = false;
+  }
+
+  /**
+   * 追加用モーダルを表示する。
+   */
+  openAddModal() {
+    this.isOpenAddModal = true;
+  }
+
+  /**
+   * firebase認証済みか判定
+   */
+  private isAuthenticated(): boolean {
+    var user = this.firebase.auth().currentUser;
+    if (!user) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

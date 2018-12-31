@@ -1,12 +1,12 @@
 import Vue from 'vue'
 import App from './App.vue'
-import firebase from 'firebase'
+import Menu from './Menu.vue'
+import AddRecordModal from './AddRecordModal.vue'
+import LoginModal from "./LoginModal.vue"
 
-firebase.initializeApp({
-    apiKey: "AIzaSyAHDqfsrgwtPkX2m1a4wtvNFBfCsy8OL4E",
-    authDomain: "cinema-records.firebaseapp.com",
-    projectId: "cinema-records"
-});
+Vue.component('Menu', Menu);
+Vue.component('AddRecordModal', AddRecordModal);
+Vue.component('LoginModal', LoginModal);
 
 new Vue({
     el: '#app',

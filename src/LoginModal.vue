@@ -1,71 +1,109 @@
 <template>
-    <transition name="modal">
-        <div class="modal-mask">
-            <div class="modal-container">
-                <header class="modal-header">
-                    ログイン
-                </header>
-                <section class="modal-body">
-                    <span class="error-message" v-if="errorMessage">{{errorMessage}}</span>
-                    <form @submit.prevent="doLogin">
-                        <div class="row-form">
-                            <label class="label">
-                                mail
-                            </label>
-                            <div class="text-field">
-                                <input type="email" class="text-field-input" v-model.trim="email" />
-                            </div>
-                        </div>
-                        <div class="row-form">
-                            <label class="label">
-                                password
-                            </label>
-                            <div class="text-field">
-                                <input type="password" class="text-field-input" v-model.trim="password" />
-                            </div>
-                        </div>
-                    </form>
-                </section>
-                <footer class="modal-footer">
-                    <button class="btn" @click="cancel">CANCEL</button>
-                    <button class="btn" @click="doLogin">LOGIN</button>
-                </footer>
+  <transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-container">
+        <header class="modal-header">ログイン</header>
+        <section class="modal-body">
+          <span class="error-message" v-if="errorMessage">{{errorMessage}}</span>
+          <form @submit.prevent="doLogin">
+            <div class="row-form">
+              <label class="label">mail</label>
+              <div class="text-field">
+                <input type="email" class="text-field-input" v-model.trim="email">
+              </div>
             </div>
-        </div>
-    </transition>
+            <div class="row-form">
+              <label class="label">password</label>
+              <div class="text-field">
+                <input type="password" class="text-field-input" v-model.trim="password">
+              </div>
+            </div>
+          </form>
+        </section>
+        <footer class="modal-footer">
+          <button class="btn" @click="cancel">CANCEL</button>
+          <button class="btn" @click="doLogin">LOGIN</button>
+        </footer>
+      </div>
+    </div>
+  </transition>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      email: "",
-      password: "",
-      errorMessage: ""
-    };
-  },
-  methods: {
-    doLogin() {
-      this.firebase()
-        .auth()
-        .signInWithEmailAndPassword(this.email, this.password)
-        .then(usr => {
-          this.cancel();
-        })
-        .catch(error => {
-          this.errorMessage = error;
-        });
-    },
-    cancel() {
-      this.$emit("cancel");
-    },
-    clear() {
-      email = "";
-      password = "";
-      showError = {};
-    }
+<script lang="ts">
+import Vue from "vue";
+import { Component, Mixins } from "vue-mixin-decorator";
+import CinemasMixin from "./CinemasMixin";
+
+@Component
+export default class LoginModal extends Mixins<CinemasMixin>(CinemasMixin) {
+  email: string = "";
+
+  password: string = "";
+
+  errorMessage: string = "";
+
+  //==========================================
+  // methods
+  //==========================================
+
+  /**
+   * ログイン実行
+   */
+  doLogin() {
+    this.firebase
+      .auth()
+      .signInWithEmailAndPassword(this.email, this.password)
+      .then(usr => {
+        this.cancel();
+      })
+      .catch(error => {
+        this.errorMessage = error;
+      });
   }
-};
+
+  /**
+   * キャンセル
+   */
+  cancel() {
+    this.$emit("cancel");
+  }
+  // clear() {
+  //   this.email = "";
+  //   this.password = "";
+  //   // this.showError = {};
+  // }
+}
+
+// export default {
+//   data() {
+//     return {
+//       email: "",
+//       password: "",
+//       errorMessage: ""
+//     };
+//   },
+//   methods: {
+//     doLogin() {
+//       this.firebase()
+//         .auth()
+//         .signInWithEmailAndPassword(this.email, this.password)
+//         .then(usr => {
+//           this.cancel();
+//         })
+//         .catch(error => {
+//           this.errorMessage = error;
+//         });
+//     },
+//     cancel() {
+//       this.$emit("cancel");
+//     },
+//     clear() {
+//       email = "";
+//       password = "";
+//       showError = {};
+//     }
+//   }
+// };
 </script>
 
 <style lang="scss" scoped>

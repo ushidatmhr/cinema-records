@@ -1,76 +1,139 @@
 <template>
-    <transition name="modal">
-        <div class="modal-mask">
-            <div class="modal-container">
-                <header class="modal-header">
-                    Add Record
-                </header>
-                <section class="modal-body">
-                    <form @submit.prevent="add">
-                        <div class="row-form">
-                            <label class="label">
-                                title
-                            </label>
-                            <div class="text-field">
-                                <input type="text" class="text-field-input" v-model.trim="title" />
-                            </div>
-                        </div>
-                        <div class="row-form">
-                            <label class="label">
-                                recommend
-                            </label>
-                            <div class="text-field">
-                                <select v-model="recommend">
-                                    <option :value="0"></option>
-                                    <option :value="1">★</option>
-                                    <option :value="2">★★</option>
-                                    <option :value="3">★★★</option>
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                </section>
-                <footer class="modal-footer">
-                    <button class="btn" @click="cancel">CANCEL</button>
-                    <button class="btn" @click="add">ADD</button>
-                </footer>
+  <transition name="modal">
+    <div class="modal-mask">
+      <div class="modal-container">
+        <header class="modal-header">Add Record</header>
+        <section class="modal-body">
+          <form @submit.prevent="save">
+            <div class="row-form">
+              <label class="label">title</label>
+              <div class="text-field">
+                <input type="text" class="text-field-input" v-model.trim="cinemaModel.title">
+              </div>
             </div>
-        </div>
-    </transition>
+            <div class="row-form">
+              <label class="label">recommend</label>
+              <div class="text-field">
+                <select v-model="cinemaModel.recommend">
+                  <option :value="0"></option>
+                  <option :value="1">★</option>
+                  <option :value="2">★★</option>
+                  <option :value="3">★★★</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </section>
+        <footer class="modal-footer">
+          <button class="btn" @click="cancel">CANCEL</button>
+          <button class="btn" @click="save">SAVE</button>
+        </footer>
+      </div>
+    </div>
+  </transition>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      title: "",
-      recommend: 0
-    };
-  },
-  methods: {
-    add() {
-      if (!this.title) {
-        return;
-      }
+<script lang="ts">
+import Vue from "vue";
+import { Component, Mixins } from "vue-mixin-decorator";
+import CinemasMixin from "./CinemasMixin";
+import { Prop } from "vue-property-decorator";
 
-      this.Cinemas()
-        .add({
-          title: this.title,
-          recommend: this.recommend
-        })
-        .then(docRef => {
-          this.$emit("addSuccess");
-          this.cancel();
-        })
-        .catch(function(error) {
-          alert(error);
-        });
-    },
-    cancel() {
-      this.$emit("cancel");
+@Component
+export default class AddRecordModal extends Mixins<CinemasMixin>(CinemasMixin) {
+  /** id */
+  @Prop()
+  id: string;
+  /** タイトル */
+  @Prop()
+  title: string;
+  /** リコメンド */
+  @Prop()
+  recommend: number;
+
+  /** 編集入力モデル */
+  cinemaModel: {
+    title: string;
+    recommend: number;
+  };
+
+  //==========================================
+  // lifecycle hook
+  //==========================================
+
+  /**
+   * インスタンス作成時処理
+   */
+  created() {
+    this.cinemaModel = {
+      title: this.title,
+      recommend: this.recommend
+    };
+  }
+
+  //==========================================
+  // methods
+  //==========================================
+
+  /**
+   * 入力内容でfirestoreへ保存する。
+   */
+  save() {
+    if (!this.cinemaModel.title) {
+      return;
+    }
+
+    if (this.id) {
+      this.updateRecord();
+    } else {
+      this.addRecord();
     }
   }
-};
+
+  /**
+   * データを新規登録
+   */
+  private addRecord() {
+    this.collection()
+      .add({
+        title: this.cinemaModel.title,
+        recommend: this.cinemaModel.recommend
+      })
+      .then(docRef => {
+        this.$emit("addSuccess");
+        this.cancel();
+      })
+      .catch(function(error) {
+        alert(error);
+      });
+  }
+
+  /**
+   * データを更新登録
+   */
+  private updateRecord() {
+    this.collection()
+      .doc(this.id)
+      .set({
+        title: this.cinemaModel.title,
+        recommend: this.cinemaModel.recommend
+      })
+      .then(() => {
+        this.$emit("addSuccess");
+        this.cancel();
+      })
+      .catch(error => {
+        alert(error);
+      });
+  }
+
+  /**
+   * キャンセルする。
+   */
+  cancel() {
+    this.$emit("cancel");
+  }
+}
 </script>
 
 <style lang="scss" scoped>
