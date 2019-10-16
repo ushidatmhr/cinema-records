@@ -45,6 +45,10 @@ module.exports = {
                     'ejs-html-loader'
                 ]
             },
+            {
+                test: /\.ttf$/,
+                loader: 'url-loader'
+            }
         ]
     },
     plugins: [

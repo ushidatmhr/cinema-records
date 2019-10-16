@@ -3,7 +3,7 @@
     <main class="contents">
       <header class="header">
         <section class="menu">
-          <input type="text" placeholder="Search" class="search" v-model="searchText">
+          <input type="text" placeholder="Search" class="search" v-model="searchText" />
           <select class="recommend-select" v-model="searchRecommend">
             <option></option>
             <option :value="0">☆</option>
@@ -228,6 +228,25 @@ export default class App extends Mixins<CinemasMixin>(CinemasMixin) {
 </script>
 
 
+<style lang="scss">
+@font-face {
+  font-family: "CinemaFont";
+  src: url("./assets/Cinema_VFP.ttf");
+}
+
+body,
+body * {
+  font-family: "CinemaFont";
+}
+
+body {
+  font-size: 18px;
+  margin: 0;
+  background-color: #eee;
+}
+</style>
+
+
 <style lang="scss" scoped>
 $contentWidth: 600px;
 
@@ -290,8 +309,8 @@ $contentWidth: 600px;
     }
 
     .item-count {
-      width: 80px;
       text-align: center;
+      padding: 2px 5px;
     }
   }
 
@@ -304,6 +323,7 @@ $contentWidth: 600px;
     box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
       0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
     overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
 
     @media screen and (max-width: 750px) {
       width: 100%;
