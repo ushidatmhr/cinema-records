@@ -28,9 +28,9 @@
           <li class="menu-item">
             <i class="material-icons">mode_edit</i>
             <div class="switch">
-              <input type="checkbox" class="switch-checkbox" v-model="isEditMode">
+              <input type="checkbox" class="switch-checkbox" v-model="isEditMode" />
               <div class="switch-background">
-                <div class="switch-knob"/>
+                <div class="switch-knob" />
               </div>
             </div>
           </li>
@@ -191,6 +191,7 @@ export default class Menu extends Mixins<CinemasMixin>(CinemasMixin) {
   .menu-block {
     position: absolute;
     min-width: 155px;
+    z-index: 9;
     top: 0;
     right: 0;
     background-color: #fff;
