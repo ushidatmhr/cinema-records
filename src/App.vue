@@ -11,6 +11,7 @@
             <option :value="2">★★</option>
             <option :value="3">★★★</option>
           </select>
+          <!-- <i @click="switchSortMode" class="material-icons sort-icon">{{sortIconName}}</i> -->
           <Menu class="hamburger" @reload="reload" @toggleEditMode="toggleEditMode"></Menu>
         </section>
       </header>
@@ -19,17 +20,20 @@
       </section>
       <section class="board">
         <ul class="list-item">
-          <li v-for="(item, key) in cinemas" v-if="item.visible" :key="key">
-            <div class="item">
+          <li v-for="(item, key) in cinemas" :key="key">
+            <div class="item" v-if="item.visible">
               <span class="item-info">
                 <span>{{item.title}}</span>
-                <span class="recommends">
-                  <i
-                    class="material-icons"
-                    v-for="(i, key) in Number(item.recommend)"
-                    :key="key"
-                  >star</i>
-                  <i class="material-icons" v-if="item.recommend == 0"></i>
+                <span>
+                  <span class="recommends">
+                    <i
+                      class="material-icons"
+                      v-for="(i, key) in Number(item.recommend)"
+                      :key="key"
+                    >star</i>
+                    <i class="material-icons" v-if="item.recommend == 0"></i>
+                  </span>
+                  <span class="created-date">{{formatDate(item.watchedDate)}}</span>
                 </span>
               </span>
               <span class="actions">
@@ -54,6 +58,7 @@
         :id="editItemId"
         :title="cinemas[editItemId].title"
         :recommend="cinemas[editItemId].recommend"
+        :watchedDate="cinemas[editItemId].watchedDate"
       ></AddRecordModal>
       <i class="material-icons loading" v-if="isLoading">sync</i>
     </main>
@@ -66,6 +71,11 @@ import Vue from "vue";
 import { Watch } from "vue-property-decorator";
 import { Component, Mixins } from "vue-mixin-decorator";
 import CinemasMixin from "./CinemasMixin";
+
+enum SortMode {
+  Alphabet,
+  Date
+}
 
 @Component
 export default class App extends Mixins<CinemasMixin>(CinemasMixin) {
@@ -83,6 +93,8 @@ export default class App extends Mixins<CinemasMixin>(CinemasMixin) {
   isOpenEditModal = false;
   /** 読み込み中フラグ */
   isLoading = false;
+  /** ソートモード */
+  sortMode = SortMode.Alphabet;
 
   //==========================================
   // lifecycle hook
@@ -115,6 +127,29 @@ export default class App extends Mixins<CinemasMixin>(CinemasMixin) {
     this.doSearch();
   }
 
+  @Watch("sortMode")
+  sortCinemaList(newValue: string, oldValue: string) {
+    // let sortedKey = Object.keys(this.cinemas).sort((a, b) => {
+    //   let dateA = this.cinemas[a].watchedDate
+    //     ? this.cinemas[a].watchedDate.getTime()
+    //     : 0;
+    //   let dateB = this.cinemas[b].watchedDate
+    //     ? this.cinemas[b].watchedDate.getTime()
+    //     : 0;
+    //   return dateB - dateA;
+    // });
+    // let sortedCinemas = {};
+    // sortedKey.forEach(key => {
+    //   let data = this.cinemas[key];
+    //   this.$set(this.cinemas, key, {
+    //     title: data.title,
+    //     recommend: data.recommend,
+    //     watchedDate: data.watchedDate,
+    //     visible: data.visible
+    //   });
+    // });
+  }
+
   //==========================================
   // get
   //==========================================
@@ -131,6 +166,15 @@ export default class App extends Mixins<CinemasMixin>(CinemasMixin) {
     });
 
     return count;
+  }
+
+  get sortIconName(): string {
+    switch (this.sortMode) {
+      case SortMode.Alphabet:
+        return "font_download";
+      case SortMode.Date:
+        return "calendar_today";
+    }
   }
 
   //==========================================
@@ -159,6 +203,9 @@ export default class App extends Mixins<CinemasMixin>(CinemasMixin) {
           this.$set(this.cinemas, doc.id, {
             title: doc.data().title,
             recommend: doc.data().recommend,
+            watchedDate: doc.data().watchedDate
+              ? doc.data().watchedDate.toDate()
+              : null,
             visible: true
           });
         });
@@ -222,6 +269,34 @@ export default class App extends Mixins<CinemasMixin>(CinemasMixin) {
           console.error("delete faild", error);
           alert(error);
         });
+    }
+  }
+
+  /**
+   * 日付を表示用フォーマットに変換する。
+   */
+  formatDate(date: Date): string {
+    if (!date) {
+      return "";
+    }
+
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    var day = date.getDate();
+    return `${year}/${month}/${day}`;
+  }
+
+  /**
+   * 並べ替えモードを切り替える
+   */
+  switchSortMode() {
+    switch (this.sortMode) {
+      case SortMode.Alphabet:
+        this.sortMode = SortMode.Date;
+        break;
+      case SortMode.Date:
+        this.sortMode = SortMode.Alphabet;
+        break;
     }
   }
 }
@@ -290,6 +365,12 @@ $contentWidth: 600px;
       .recommend-select {
         margin-left: 10px;
       }
+
+      .sort-icon {
+        color: #fff;
+        cursor: pointer;
+        padding: 2px 16px;
+      }
     }
 
     .hamburger {
@@ -348,11 +429,17 @@ $contentWidth: 600px;
           width: 264px;
 
           .recommends {
+            display: inline-block;
             padding-left: 4px;
+            width: 36px;
 
             .material-icons {
               font-size: 11px;
             }
+          }
+
+          .created-date {
+            font-size: 13px;
           }
         }
 

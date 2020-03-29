@@ -8,7 +8,7 @@
             <div class="row-form">
               <label class="label">title</label>
               <div class="text-field">
-                <input type="text" class="text-field-input" v-model.trim="cinemaModel.title">
+                <input type="text" class="text-field-input" v-model.trim="cinemaModel.title" />
               </div>
             </div>
             <div class="row-form">
@@ -21,6 +21,10 @@
                   <option :value="3">★★★</option>
                 </select>
               </div>
+            </div>
+            <div class="row-form">
+              <label class="label">watched date</label>
+              <v-date-picker v-model="cinemaModel.watchedDate"></v-date-picker>
             </div>
           </form>
         </section>
@@ -38,6 +42,7 @@ import Vue from "vue";
 import { Component, Mixins } from "vue-mixin-decorator";
 import CinemasMixin from "./CinemasMixin";
 import { Prop } from "vue-property-decorator";
+import firebase from "firebase";
 
 @Component
 export default class AddRecordModal extends Mixins<CinemasMixin>(CinemasMixin) {
@@ -50,11 +55,15 @@ export default class AddRecordModal extends Mixins<CinemasMixin>(CinemasMixin) {
   /** リコメンド */
   @Prop()
   recommend: number;
+  /** 視聴日 */
+  @Prop()
+  watchedDate: Date;
 
   /** 編集入力モデル */
   cinemaModel: {
     title: string;
     recommend: number;
+    watchedDate: Date;
   };
 
   //==========================================
@@ -65,9 +74,19 @@ export default class AddRecordModal extends Mixins<CinemasMixin>(CinemasMixin) {
    * インスタンス作成時処理
    */
   created() {
+    // 視聴日の初期値設定
+    let initWatchedDate;
+    if (!this.id) {
+      // 新規登録時は今日日付をセット
+      initWatchedDate = new Date();
+    } else {
+      initWatchedDate = this.watchedDate;
+    }
+
     this.cinemaModel = {
       title: this.title,
-      recommend: this.recommend
+      recommend: this.recommend,
+      watchedDate: initWatchedDate
     };
   }
 
@@ -78,7 +97,7 @@ export default class AddRecordModal extends Mixins<CinemasMixin>(CinemasMixin) {
   /**
    * 入力内容でfirestoreへ保存する。
    */
-  save() {
+  save(): void {
     if (!this.cinemaModel.title) {
       return;
     }
@@ -93,11 +112,12 @@ export default class AddRecordModal extends Mixins<CinemasMixin>(CinemasMixin) {
   /**
    * データを新規登録
    */
-  private addRecord() {
+  private addRecord(): void {
     this.collection()
       .add({
         title: this.cinemaModel.title,
-        recommend: this.cinemaModel.recommend
+        recommend: this.cinemaModel.recommend,
+        watchedDate: this.convertDateForFirestore(this.cinemaModel.watchedDate)
       })
       .then(docRef => {
         this.$emit("addSuccess");
@@ -111,12 +131,13 @@ export default class AddRecordModal extends Mixins<CinemasMixin>(CinemasMixin) {
   /**
    * データを更新登録
    */
-  private updateRecord() {
+  private updateRecord(): void {
     this.collection()
       .doc(this.id)
       .set({
         title: this.cinemaModel.title,
-        recommend: this.cinemaModel.recommend
+        recommend: this.cinemaModel.recommend,
+        watchedDate: this.convertDateForFirestore(this.cinemaModel.watchedDate)
       })
       .then(() => {
         this.$emit("addSuccess");
@@ -128,9 +149,21 @@ export default class AddRecordModal extends Mixins<CinemasMixin>(CinemasMixin) {
   }
 
   /**
+   * firestoreのTimestamp形式に変換
+   * @param date 日付
+   */
+  private convertDateForFirestore(date: Date): firebase.firestore.Timestamp {
+    if (date instanceof Date) {
+      return this.firebase.firestore.Timestamp.fromDate(date);
+    } else {
+      return null;
+    }
+  }
+
+  /**
    * キャンセルする。
    */
-  cancel() {
+  cancel(): void {
     this.$emit("cancel");
   }
 }

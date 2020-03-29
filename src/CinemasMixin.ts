@@ -20,7 +20,7 @@ export default class CinemasMixin extends Vue {
     /** firebaseインスタンス */
     firebase = firebase;
 
-    /** firestore取得 */
+    /** コレクション取得 */
     collection() {
         // TODO
         return this.firebase.firestore().collection("cinemas");
