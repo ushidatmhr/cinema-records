@@ -11,16 +11,16 @@
             <option :value="2">★★</option>
             <option :value="3">★★★</option>
           </select>
-          <!-- <i @click="switchSortMode" class="material-icons sort-icon">{{sortIconName}}</i> -->
+          <i @click="switchSortMode" class="material-icons sort-icon">{{sortIconName}}</i>
           <Menu class="hamburger" @reload="reload" @toggleEditMode="toggleEditMode"></Menu>
         </section>
       </header>
       <section class="sub-info">
-        <label class="item-count">{{displayCount}} / {{Object.keys(cinemas).length}}</label>
+        <label class="item-count">{{displayCount}} / {{cinemas.length}}</label>
       </section>
       <section class="board">
         <ul class="list-item">
-          <li v-for="(item, key) in cinemas" :key="key">
+          <li v-for="(item) in cinemas" :key="item.id">
             <div class="item" v-if="item.visible">
               <span class="item-info">
                 <span>{{item.title}}</span>
@@ -43,8 +43,8 @@
                   :href="'https://www.google.co.jp/search?q=映画+' + item.title"
                 >web</a>
                 <span v-if="editMode">
-                  <i class="material-icons" @click="doDelete(key)">delete</i>
-                  <i class="material-icons" @click="openEditModal(key)">mode_edit</i>
+                  <i class="material-icons" @click="doDelete(item.id)">delete</i>
+                  <i class="material-icons" @click="openEditModal(item.id)">mode_edit</i>
                 </span>
               </span>
             </div>
@@ -55,10 +55,10 @@
         v-if="isOpenEditModal"
         @addSuccess="reload"
         @cancel="modalClose"
-        :id="editItemId"
-        :title="cinemas[editItemId].title"
-        :recommend="cinemas[editItemId].recommend"
-        :watchedDate="cinemas[editItemId].watchedDate"
+        :id="editTargetItem.id"
+        :title="editTargetItem.title"
+        :recommend="editTargetItem.recommend"
+        :watchedDate="editTargetItem.watchedDate"
       ></AddRecordModal>
       <i class="material-icons loading" v-if="isLoading">sync</i>
     </main>
@@ -80,15 +80,21 @@ enum SortMode {
 @Component
 export default class App extends Mixins<CinemasMixin>(CinemasMixin) {
   /** 表示用オブジェクト */
-  cinemas = {};
+  cinemas: {
+    id: string;
+    title: string;
+    recommend: number;
+    watchedDate: Date;
+    visible: boolean;
+  }[] = [];
   /** 検索文字 */
   searchText = "";
   /** 検索スター数 */
   searchRecommend = "";
   /** 編集モード */
   editMode = false;
-  /** 編集対象ID */
-  editItemId = null;
+  /** 編集対象 */
+  editTargetItem = null;
   /** 編集モーダル表示フラグ */
   isOpenEditModal = false;
   /** 読み込み中フラグ */
@@ -129,25 +135,15 @@ export default class App extends Mixins<CinemasMixin>(CinemasMixin) {
 
   @Watch("sortMode")
   sortCinemaList(newValue: string, oldValue: string) {
-    // let sortedKey = Object.keys(this.cinemas).sort((a, b) => {
-    //   let dateA = this.cinemas[a].watchedDate
-    //     ? this.cinemas[a].watchedDate.getTime()
-    //     : 0;
-    //   let dateB = this.cinemas[b].watchedDate
-    //     ? this.cinemas[b].watchedDate.getTime()
-    //     : 0;
-    //   return dateB - dateA;
-    // });
-    // let sortedCinemas = {};
-    // sortedKey.forEach(key => {
-    //   let data = this.cinemas[key];
-    //   this.$set(this.cinemas, key, {
-    //     title: data.title,
-    //     recommend: data.recommend,
-    //     watchedDate: data.watchedDate,
-    //     visible: data.visible
-    //   });
-    // });
+    this.cinemas.sort((a, b) => {
+      if (this.sortMode == SortMode.Date) {
+        let timeA = a.watchedDate ? a.watchedDate.getTime() : 0;
+        let timeB = b.watchedDate ? b.watchedDate.getTime() : 0;
+        return timeB - timeA;
+      } else {
+        return b.title < a.title ? 1 : -1;
+      }
+    });
   }
 
   //==========================================
@@ -185,7 +181,7 @@ export default class App extends Mixins<CinemasMixin>(CinemasMixin) {
    * データを再取得する。
    */
   reload() {
-    this.cinemas = {};
+    this.cinemas = [];
     this.selectForAll();
   }
 
@@ -200,7 +196,8 @@ export default class App extends Mixins<CinemasMixin>(CinemasMixin) {
       .get()
       .then(querySnapshot => {
         querySnapshot.forEach(doc => {
-          this.$set(this.cinemas, doc.id, {
+          this.cinemas.push({
+            id: doc.id,
             title: doc.data().title,
             recommend: doc.data().recommend,
             watchedDate: doc.data().watchedDate
@@ -243,7 +240,8 @@ export default class App extends Mixins<CinemasMixin>(CinemasMixin) {
    * 編集モーダルを表示する
    */
   openEditModal(id: string) {
-    this.editItemId = id;
+    let edit = this.cinemas.filter(item => item.id == id);
+    this.editTargetItem = edit[0];
     this.isOpenEditModal = true;
   }
 
@@ -370,6 +368,7 @@ $contentWidth: 600px;
         color: #fff;
         cursor: pointer;
         padding: 2px 16px;
+        user-select: none;
       }
     }
 
