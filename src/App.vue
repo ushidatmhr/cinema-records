@@ -304,7 +304,7 @@ export default class App extends Mixins<CinemasMixin>(CinemasMixin) {
 <style lang="scss">
 @font-face {
   font-family: "CinemaFont";
-  src: url("./assets/Cinema_VFP.ttf");
+  src: url("./assets/Cinema_VFP_subset.ttf");
 }
 
 body,
