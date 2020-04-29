@@ -425,7 +425,6 @@ $contentWidth: 600px;
         .item-info {
           display: flex;
           flex-direction: column;
-          width: 264px;
 
           .recommends {
             display: inline-block;
